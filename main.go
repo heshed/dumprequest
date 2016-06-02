@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/http/httputil"
-	"sync"
 )
 
 func main() {
+	done := make(chan bool)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		dump, err := httputil.DumpRequest(r, true)
 		if err != nil {
@@ -20,8 +20,6 @@ func main() {
 		fmt.Println(string(dump))
 	}))
 	fmt.Println(ts.URL)
-	var wg sync.WaitGroup
-	wg.Add(1)
-	wg.Wait()
+	<-done
 	defer ts.Close()
 }
